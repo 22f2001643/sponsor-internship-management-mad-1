@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Influencer's Dashboard{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+        }
+
+        .navbar {
+            background-color: aquamarine;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1400px; /* Increased max-width */
+            margin: auto; /* Center align the container */
+            padding: 20px;
+        }
+
+        .card {
+            border: 1px solid #333; /* Border added */
+            background-color: #222; /* Dark gray background */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff; /* White title text */
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: #ccc; /* Light gray text */
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background-color: rgb(3, 3, 3);
+            color: rgb(252, 170, 170);
+            border-radius: 10px;
+            padding: 10px 20px;
+            border: none;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: rgb(19, 4, 4);
+        }
+
+        .btn-outline-primary {
+            color: rgb(3, 3, 3);
+            border: 1px solid rgb(3, 3, 3);
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: rgb(3, 3, 3);
+            color: rgb(252, 170, 170);
+        }
+
+        .campaigns-container {
+            margin-top: 30px;
+        }
+
+        .add-button {
+            background-color: indianred;
+            color: rgb(3, 3, 3);
+            border-radius: 50%;
+            padding: 15px;
+            font-size: 30px;
+            border: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            cursor: pointer;
+            width: 70px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .add-button {
+                font-size: 24px;
+                padding: 10px;
+                width: 50px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Influencer's Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('influencer_dashboard') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('profile_influencer') }}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('find_influencer') }}">Find</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('stats_influencer') }}">Stats</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('requests_to_influencer') }}">Request</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Campaigns</h1>
+
+        <form class="search-form" method="get" action="{{ url_for('find_influencer') }}">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ search_query }}">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+        <br><br>
+        <div class="row campaigns-container">
+            {% for campaign in campaigns %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ campaign.title }}</h2>
+                        <p class="card-text"><strong>Dates:</strong> {{ campaign.start_date }} - {{ campaign.end_date }}</p>
+                        <p class="card-text"><strong>Budget:</strong> {{ campaign.budget }}</p>
+                        <a href="{{ url_for('view_campaign_for_influencer', campaign_id=campaign.id) }}" class="btn btn-primary">View Campaign</a>
+
+                        {% if campaign.requested %}
+                        <button type="button" class="btn btn-warning unrequest-btn"
+                                data-campaign-id="{{ campaign.id }}">Unrequest Campaign</button>
+                        <p class="card-text"><strong>Status:</strong> Pending</p>
+                        {% else %}
+                        <button type="button" class="btn btn-success request-btn"
+                                data-campaign-id="{{ campaign.id }}">Request Campaign</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // AJAX for requesting campaign
+            $('.request-btn').click(function () {
+                var campaignId = $(this).data('campaign-id');
+                $.ajax({
+                    url: '/request_campaign/' + campaignId,
+                    method: 'POST',
+                    success: function (response) {
+                        alert(response.message);
+                        // Update UI if needed, e.g., change button to unrequest
+                    },
+                    error: function () {
+                        alert('Error requesting campaign. Please try again.');
+                    }
+                });
+            });
+
+            // AJAX for unrequesting campaign
+            $('.unrequest-btn').click(function () {
+                var campaignId = $(this).data('campaign-id');
+                $.ajax({
+                    url: '/unrequest_campaign/' + campaignId,
+                    method: 'POST',
+                    success: function (response) {
+                        alert(response.message);
+                        // Update UI if needed, e.g., change button to request
+                    },
+                    error: function () {
+                        alert('Error unrequesting campaign. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

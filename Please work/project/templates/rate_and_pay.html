@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate and Pay</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Rating and Payment for Influencer</h2>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Campaign Details</h5>
+                <p><strong>Title:</strong> {{ campaign.title }}</p>
+                <p><strong>Description:</strong> {{ campaign.description }}</p>
+                <p><strong>Start Date:</strong> {{ campaign.start_date }}</p>
+                <p><strong>End Date:</strong> {{ campaign.end_date }}</p>
+                <p><strong>Budget:</strong> ${{ campaign.budget }}</p>
+                <!-- Add more campaign details as needed -->
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Influencer Details</h5>
+                <p><strong>Username:</strong> {{ influencer.username }}</p>
+                <p><strong>Platform:</strong> {{ influencer.platform }}</p>
+                <p><strong>Ratings:</strong> {{ influencer.ratings }}</p>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Rate and Pay</h5>
+                <form method="post" action="{{ url_for('rating_paying', influencer_id=influencer.id) }}">
+                    <input type="hidden" name="influencer_id" value="{{ influencer.id }}">
+                    <input type="hidden" name="budget" value="{{ campaign.budget }}">
+                    <div class="form-group">
+                        <label for="rating">Rating:</label>
+                        <select class="form-control" id="rating" name="rating">
+                            <option value="5">⭐⭐⭐⭐⭐</option>
+                            <option value="4">⭐⭐⭐⭐</option>
+                            <option value="3">⭐⭐⭐</option>
+                            <option value="2">⭐⭐</option>
+                            <option value="1">⭐</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Rating & Pay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+

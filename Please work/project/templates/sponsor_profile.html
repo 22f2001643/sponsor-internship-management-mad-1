@@ -1,0 +1,149 @@
+<!-- templates/sponsor_profile.html -->
+{% extends "sponsor_base.html" %}
+{% block title %}Sponsor Profile{% endblock %}
+
+{% block content %}
+    <style>
+        h1 {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #968a8a;
+        }
+
+        .container {
+            max-width: 1600px; /* Increase the max-width of the container */
+            margin: auto;
+            padding: 20px;
+        }
+
+        .table {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 1rem;
+            color: #6f767e;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .table tbody + tbody {
+            border-top: 2px solid #dee2e6;
+        }
+
+        .table .btn {
+            margin-right: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border: none;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-success.accept-btn {
+            background-color: #28a745;
+            border: none;
+        }
+    </style>
+
+    <h1>My Campaigns</h1>
+    {% if campaigns %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for campaign in campaigns %}
+                    <tr>
+                        <td>{{ campaign.title }}</td>
+                        <td>{{ campaign.start_date }}</td>
+                        <td>{{ campaign.end_date }}</td>
+                        <td>
+                            <a href="{{ url_for('view_campaign_profile', campaign_id=campaign.id) }}" class="btn btn-primary">View</a>
+                            <a href="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" class="btn btn-warning">Edit</a>
+                            <form action="{{ url_for('delete_campaign', campaign_id=campaign.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No campaigns found.</p>
+    {% endif %}
+
+    <h1>Received Requests from influencers</h1>
+{% if sent_requests %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Influencer</th>
+                <th>Campaign</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in sent_requests %}
+                <tr>
+                    <td>{{ request.influencer_username }}</td>
+                    <td>{{ request.campaign_title }}</td>
+                    <td>{{ request.status }}</td>
+                    <td>
+                        {% if request.status == 'pending' %}
+                        <form action="{{ url_for('accept_influencer', request_id=request.request_id, campaign_id=sponsor_id) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="_method" value="PATCH">
+                            <button type="submit" class="btn btn-success">Accept</button>
+                        </form>
+                        <form action="{{ url_for('reject_influencer', request_id=request.request_id, campaign_id=sponsor_id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </form>
+                        
+                        {% elif request.status == 'accepted' %}
+                            <a href="{{ url_for('rating_paying', influencer_id=request.influencer_id) }}" class="btn btn-success">Rate & Pay</a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>Action not available</button>
+                        {% endif %}
+                        <a href="{{ url_for('view_influencer', influencer_id=request.influencer_id) }}" class="btn btn-primary">View</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No requests sent to influencers found.</p>
+{% endif %}
+
+{% endblock %}

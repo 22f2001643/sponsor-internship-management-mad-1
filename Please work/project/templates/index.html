@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Concert+One&display=swap" rel="stylesheet">
+<style>
+    body {
+        background-image: url('/static/bridge.jpg');
+        /* Adjust the path to match the location of your image file */
+    }
+    h1 {
+        margin : 10%;
+        margin-top: 32%;
+        padding-top : 10%;
+        color: black;
+        font-size: 42px;
+        font-style: normal;
+        font-display: bolder;
+        font-family: "Concert One", sans-serif;
+        font-weight: 500;
+        background-color: rgba(199, 196, 196, 0.171); /* Add background color with opacity */
+        display: inline-block; /* Ensure the background only covers the text */
+        border-radius: 10px; /* Add rounded corners for better appearance */
+        padding: 20px; /* Add padding to the text for better spacing */
+    }
+</style>
+<body>
+    <h1>Welcome to Bridge SI!</h1>
+</body>          
+{% endblock %}
+
+

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Influencer Requests</title>
+</head>
+<body>
+    <h1>Influencer Requests</h1>
+    {% for request in requests %}
+    <div>
+        <h2>{{ request.title }}</h2>
+        <p>{{ request.description }}</p>
+        <img src="{{ request.image_url }}" alt="Campaign Image">
+        <p>Niche: {{ request.niche }}</p>
+        <p>Start Date: {{ request.start_date }}</p>
+        <p>End Date: {{ request.end_date }}</p>
+        <p>Budget: {{ request.budget }}</p>
+        <p>Status: {{ request.status }}</p>
+        {% if request.status == 'Pending' %}
+        <form method="post" action="{{ url_for('respond_request', request_id=request.id) }}">
+            <input type="hidden" name="status" value="Accepted">
+            <button type="submit">Accept</button>
+        </form>
+        <form method="post" action="{{ url_for('respond_request', request_id=request.id) }}">
+            <input type="hidden" name="status" value="Rejected">
+            <button type="submit">Reject</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</body>
+</html>

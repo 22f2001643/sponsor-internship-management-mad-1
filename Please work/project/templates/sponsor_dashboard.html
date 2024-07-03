@@ -1,0 +1,241 @@
+{% extends "sponsor_base.html" %}
+
+{% block title %}Campaigns{% endblock %}
+
+{% block content %}
+<style>
+    /* Your CSS styles for campaign display and popup boxes */
+    .container {
+        padding: 10px;
+    }
+
+    .campaign-container {
+        text-align: left;
+        padding: 15px;
+        width: 25%;
+        background-color: indianred;
+        border-radius: 10px;
+        color: antiquewhite;
+        margin: 30px;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .campaign-container h2 {
+        color: black;
+    }
+
+    .campaign-container h3 {
+        color: rgb(19, 4, 4);
+    }
+
+    .campaign-container button {
+        background-color: rgb(3, 3, 3);
+        color: rgb(252, 170, 170);
+        border-radius: 10px;
+        padding: 5px 10px;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .add-button {
+        background-color: indianred;
+        color: rgb(3, 3, 3);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 30px;
+        border: none;
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .poverlay {
+        background-color: black;
+        opacity: 0.8;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        display: none;
+    }
+
+    .popup-box {
+        background-color: indianred;
+        width: 50%;
+        padding: 30px;
+        border-radius: 10px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        display: none;
+    }
+
+    .popup-box input,
+    .popup-box textarea {
+        background: transparent;
+        border: none;
+        width: 100%;
+        margin: 5px;
+        padding: 5px;
+        font-size: 20px;
+        border-bottom: solid black 2px;
+    }
+
+    .popup-box textarea {
+        border: solid black 2px;
+    }
+
+    .popup-box input::placeholder,
+    .popup-box textarea::placeholder {
+        color: black;
+    }
+
+    .popup-box button {
+        background-color: black;
+        color: rgb(245, 188, 188);
+        padding: 10px;
+        border: none;
+        margin: 10px;
+    }
+
+    .popup-box input:focus,
+    .popup-box textarea:focus {
+        outline: none;
+    }
+</style>
+
+<div class="container">
+    <div class="campaigns-container">
+        {% for campaign in campaigns %}
+        <div class="campaign-container">
+            <h2>{{ campaign.title }}</h2>
+            {% if campaign.image_url %}
+            <img src="{{ campaign.image_url }}" alt="Campaign Image" style="width:100%;height:auto;">
+            {% endif %}
+            <h3>Niche: {{ campaign.niche }}</h3>
+            <p>{{ campaign.description }}</p>
+            <p>Start Date: {{ campaign.start_date }}</p>
+            <p>End Date: {{ campaign.end_date }}</p>
+            <p>Budget: ${{ campaign.budget }}</p>
+            <a href="#" class="edit-campaign" data-id="{{ campaign.id }}">Edit</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="poverlay"></div>
+
+<!-- Add Campaign Form Popup -->
+<div class="popup-box" id="add-campaign-popup">
+    <h2>Add Campaign</h2>
+    <form action="{{ url_for('add_campaign') }}" method="post">
+        <input type="text" name="title" placeholder="Campaign Title" required>
+        <input type="text" name="description" placeholder="Description" required>
+        <input type="text" name="image_url" placeholder="Image URL">
+        <input type="text" name="niche" placeholder="Niche" required>
+        <input type="date" name="start_date" placeholder="Start Date" required>
+        <input type="date" name="end_date" placeholder="End Date" required>
+        <input type="number" name="budget" placeholder="Budget" required>
+        <button type="submit">Add</button>
+        <button type="button" id="cancel-add-campaign">Cancel</button>
+    </form>
+</div>
+
+<!-- Edit Campaign Form Popup -->
+<div class="popup-box" id="edit-campaign-popup">
+    <h2>Edit Campaign</h2>
+    <form action="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" method="post">
+        <input type="hidden" name="campaign_id" id="edit-campaign-id">
+        <input type="text" name="title" placeholder="Campaign Title" id="edit-campaign-title" required>
+        <input type="text" name="description" placeholder="Description" id="edit-campaign-description" required>
+        <input type="text" name="image_url" placeholder="Image URL" id="edit-campaign-image-url">
+        <input type="text" name="niche" placeholder="Niche" id="edit-campaign-niche" required>
+        <input type="date" name="start_date" placeholder="Start Date" id="edit-campaign-start-date" required>
+        <input type="date" name="end_date" placeholder="End Date" id="edit-campaign-end-date" required>
+        <input type="number" name="budget" placeholder="Budget" id="edit-campaign-budget" required>
+        <button type="submit">Save Changes</button>
+        <button type="button" id="cancel-edit-campaign">Cancel</button>
+    </form>
+</div>
+
+<button class="add-button" id="add-campaign-button">+</button>
+
+<script>
+    var poverlay = document.querySelector(".poverlay");
+    var addCampaignPopup = document.getElementById("add-campaign-popup");
+    var editCampaignPopup = document.getElementById("edit-campaign-popup");
+    var addCampaignButton = document.getElementById("add-campaign-button");
+    var cancelAddCampaign = document.getElementById("cancel-add-campaign");
+    var cancelEditCampaign = document.getElementById("cancel-edit-campaign");
+
+    // Event listener to open add campaign popup
+    addCampaignButton.addEventListener("click", function() {
+        poverlay.style.display = "block";
+        addCampaignPopup.style.display = "block";
+    });
+
+    // Event listener to close add campaign popup
+    cancelAddCampaign.addEventListener("click", function(event) {
+        event.preventDefault();
+        poverlay.style.display = "none";
+        addCampaignPopup.style.display = "none";
+    });
+
+    // Event listener to close edit campaign popup
+    cancelEditCampaign.addEventListener("click", function(event) {
+        event.preventDefault();
+        poverlay.style.display = "none";
+        editCampaignPopup.style.display = "none";
+    });
+
+    // Function to populate edit campaign form fields
+    function populateEditForm(campaign) {
+        document.getElementById("edit-campaign-id").value = campaign.id;
+        document.getElementById("edit-campaign-title").value = campaign.title;
+        document.getElementById("edit-campaign-description").value = campaign.description;
+        document.getElementById("edit-campaign-image-url").value = campaign.image_url;
+        document.getElementById("edit-campaign-niche").value = campaign.niche;
+        document.getElementById("edit-campaign-start-date").value = campaign.start_date;
+        document.getElementById("edit-campaign-end-date").value = campaign.end_date;
+        document.getElementById("edit-campaign-budget").value = campaign.budget;
+    }
+
+    // Edit campaign links event listeners
+    var editCampaignLinks = document.getElementsByClassName("edit-campaign");
+    Array.from(editCampaignLinks).forEach(function(link) {
+        link.addEventListener("click", function(event) {
+            event.preventDefault();
+            var campaignId = this.getAttribute("data-id");
+
+            // Fetch campaign details using campaignId (AJAX call)
+            fetch('/get_campaign/' + campaignId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        populateEditForm(data.campaign);
+                        poverlay.style.display = "block";
+                        editCampaignPopup.style.display = "block";
+                    } else {
+                        alert('Failed to fetch campaign details.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+
+    // Additional JavaScript functionality (e.g., form submission handling) can be added here
+
+</script>
+{% endblock %}
+

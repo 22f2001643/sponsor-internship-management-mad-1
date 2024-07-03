@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+    <style>
+        /* Custom CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+        }
+
+        .navbar {
+            background-color: #f3ebeb; /* Change to desired color */
+        }
+
+        .navbar-brand {
+            color: #fff; /* Navbar brand text color */
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-link {
+            color: #fff; /* Navbar links color */
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #ccc; /* Navbar links hover color */
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .campaign-container {
+            background-color: #fff; /* Campaign container background color */
+            border: 1px solid #ddd; /* Campaign container border */
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Campaign container box shadow */
+        }
+
+        .campaign-container h3 {
+            color: #333; /* Campaign title color */
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .campaign-container p {
+            color: #666; /* Text color */
+            margin-bottom: 5px;
+        }
+
+        .campaign-container a.btn {
+            background-color: #007bff; /* Button background color */
+            color: #fff; /* Button text color */
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .campaign-container a.btn:hover {
+            background-color: #0056b3; /* Button hover background color */
+            color: #fff; /* Button hover text color */
+        }
+
+        .influencer-container {
+            background-color: #fff; /* Influencer container background color */
+            border: 1px solid #ddd; /* Influencer container border */
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Influencer container box shadow */
+        }
+
+        .influencer-container h3 {
+            color: #333; /* Influencer title color */
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .influencer-container p {
+            color: #666; /* Text color */
+            margin-bottom: 5px;
+        }
+
+        .influencer-container a.btn {
+            background-color: #007bff; /* Button background color */
+            color: #fff; /* Button text color */
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .influencer-container a.btn:hover {
+            background-color: #0056b3; /* Button hover background color */
+            color: #fff; /* Button hover text color */
+        }
+
+        .add-button {
+            background-color: #dc3545; /* Add button background color */
+            color: #fff; /* Add button text color */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            text-align: center;
+            line-height: 60px;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Add button box shadow */
+        }
+
+        .add-button:hover {
+            background-color: #c82333; /* Add button hover background color */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">Admin's Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_info') }}">Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('find_admin') }}">Find</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('stats') }}">Stats</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h2>Campaigns</h2>
+        {% for campaign in campaigns %}
+        <div class="campaign-container">
+            <h3>{{ campaign['title'] }}</h3>
+            <p>Niche: {{ campaign['niche'] }}</p>
+            <p>Start Date: {{ campaign['start_date'] }}</p>
+            <p>End Date: {{ campaign['end_date'] }}</p>
+            <a href="{{ url_for('view_admin_camp', campaign_id=campaign['id']) }}" class="btn btn-primary">View</a>
+        </div>
+        {% endfor %}
+
+        <h2>Influencers</h2>
+        {% for influencer in influencers %}
+        <div class="influencer-container">
+            <h3>{{ influencer['username'] }}</h3>
+            <p>Platform: {{ influencer['platform'] }}</p>
+            <p>Industry: {{ influencer['industry'] }}</p>
+            <a href="{{ url_for('view_admin_influ', influencer_id=influencer['id']) }}" class="btn btn-primary">View</a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+ 

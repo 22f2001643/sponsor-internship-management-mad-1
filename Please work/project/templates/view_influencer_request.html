@@ -1,0 +1,36 @@
+{% extends "admin_base.html" %}
+{% block title %}Influencer Details{% endblock %}
+
+{% block content %}
+<h1>{{ influencer.username }} on {{ influencer.platform }}</h1>
+
+<h2>Requests</h2>
+{% if requests %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+                <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.status }}</td>
+                    <td>
+                        <a href="{{ url_for('view_request', request_id=request.id) }}" class="btn btn-primary">View</a>
+                        {% if request.status == 'Pending' %}
+                            <a href="{{ url_for('accept_request', request_id=request.id) }}" class="btn btn-success">Accept</a>
+                            <a href="{{ url_for('reject_request', request_id=request.id) }}" class="btn btn-danger">Reject</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No requests found.</p>
+{% endif %}
+{% endblock %}

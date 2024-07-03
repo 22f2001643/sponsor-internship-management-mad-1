@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Stats</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+</head>
+<style>
+    /* Your custom CSS styles */
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar {
+        background-color: aquamarine;
+        padding: 10px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .campaign-container {
+        text-align: left;
+        padding: 15px;
+        width: 25%;
+        background-color: indianred;
+        border-radius: 10px;
+        color: antiquewhite;
+        margin: 30px;
+        display: inline-block;
+        vertical-align: top;
+        position: relative;
+    }
+
+    .campaign-container h2 {
+        color: black;
+    }
+
+    .campaign-container h3 {
+        color: rgb(19, 4, 4);
+    }
+
+    .campaign-container p {
+        margin-bottom: 5px;
+    }
+
+    .campaign-container button {
+        background-color: rgb(3, 3, 3);
+        color: rgb(252, 170, 170);
+        border-radius: 10px;
+        padding: 5px 10px;
+        border: none;
+        margin-top: 10px;
+        margin-right: 5px;
+    }
+
+    .add-button {
+        background-color: indianred;
+            color: rgb(3, 3, 3);
+            border-radius: 50%; /* Makes the button perfectly round */
+            padding: 15px; /* Adjust padding to control button size */
+            font-size: 30px; /* Adjust font size to match the reduced padding */
+            border: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            cursor: pointer; /* Ensures cursor changes to pointer on hover */
+            width:70px;
+    }
+
+
+    .poverlay {
+        background-color: black;
+        opacity: 0.8;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        display: none;
+    }
+
+    .popup-box {
+background-color: indianred;
+width: 60%; /* Adjust the width as needed */
+padding: 40px;
+border-radius: 10px;
+position: fixed;
+top: 50%; /* Position at 50% from the top */
+left: 50%; /* Position at 50% from the left */
+transform: translate(-50%, -50%); /* Center the box */
+z-index: 2;
+display: none;
+}
+
+
+    .popup-box input,
+    .popup-box textarea {
+        background: transparent;
+        border: none;
+        width: 100%;
+        margin: 5px;
+        padding: 5px;
+        font-size: 20px;
+        border-bottom: solid black 2px;
+    }
+
+    .popup-box textarea {
+        border: solid black 2px;
+    }
+
+    .popup-box input::placeholder,
+    .popup-box textarea::placeholder {
+        color: black;
+    }
+
+    .popup-box button {
+        background-color:black;
+        color: rgb(211, 133, 133);
+        padding: 10px;
+        border: none;
+        margin: 10px;
+    }
+
+    .popup-box input:focus,
+    .popup-box textarea:focus {
+        outline: none;
+    }
+</style>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">Admin's Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_info') }}">Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('find_admin') }}">Find</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('stats') }}">Stats</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h2>Stats</h2>
+        <canvas id="statsChart"></canvas>
+        <h3>Sponsors</h3>
+        <ul id="sponsorsList"></ul>
+        <h3>Ratings</h3>
+        <ul id="ratingsList"></ul>
+    </div>
+
+    <script>
+        // Fetch stats data
+        const numInfluencers = {{ num_influencers }};
+        const numSponsors = {{ num_sponsors }};
+
+        // Render the chart
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        const statsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Influencers', 'Sponsors'],
+                datasets: [{
+                    label: 'Count',
+                    data: [numInfluencers, numSponsors],
+                    backgroundColor: ['gold', 'greenyellow']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Function to fetch and display sponsors and their campaigns
+        // Function to fetch sponsors and their campaigns
+function fetchSponsors() {
+    fetch('/sponsors')
+        .then(response => response.json())
+        .then(data => {
+            const sponsorsList = document.getElementById('sponsorsList');
+            data.sponsors.forEach(sponsor => {
+                const sponsorContainer = document.createElement('div');
+                sponsorContainer.classList.add('sponsor-item'); // Add a class for styling if needed
+
+                const sponsorName = document.createElement('span');
+                sponsorName.textContent = sponsor.username;
+                sponsorContainer.appendChild(sponsorName);
+
+                const campaignsList = document.createElement('ul');
+                campaignsList.classList.add('campaigns-list'); // Add a class for styling if needed
+
+                sponsorContainer.appendChild(campaignsList);
+
+                // Add event listener to fetch campaigns on click
+                sponsorName.addEventListener('click', () => {
+                    fetch(`/sponsor_campaigns/${sponsor.id}`)
+                        .then(response => response.json())
+                        .then(campaignData => {
+                            campaignsList.innerHTML = ''; // Clear previous list
+
+                            campaignData.campaigns.forEach(campaign => {
+                                const campaignItem = document.createElement('li');
+                                campaignItem.textContent = campaign.title;
+                                campaignsList.appendChild(campaignItem);
+                            });
+                        });
+                });
+
+                sponsorsList.appendChild(sponsorContainer);
+            });
+        });
+}
+
+
+        // Function to create star ratings
+        function getStars(rating) {
+    const roundedRating = Math.round(rating); // Assuming ratings are integers
+    let stars = '';
+    for (let i = 0; i < roundedRating; i++) {
+        stars += '⭐<br>'; // Add <br> to create a new line after each star
+    }
+    return stars;
+}
+
+// Function to fetch and display influencer ratings
+// Function to fetch and display influencer ratings
+function fetchRatings() {
+    fetch('/ratings')
+        .then(response => response.json())
+        .then(data => {
+            const ratingsList = document.getElementById('ratingsList');
+            ratingsList.innerHTML = ''; // Clear previous list
+
+            const usernames = data.ratings.map(rating => rating.influencer_username);
+            const ratings = data.ratings.map(rating => rating.influencer_ratings);
+
+            const ctx = document.createElement('canvas');
+            ratingsList.appendChild(ctx); // Append canvas to the list
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: usernames,
+                    datasets: [{
+                        label: 'Ratings',
+                        data: ratings,
+                        backgroundColor: 'brown',
+                        borderColor: 'firebrick',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize: 1 // Assuming ratings are whole numbers
+                            },
+                            title: {
+                                display: true,
+                                text: 'Ratings'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Usernames'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+}
+
+// Fetch data when the page loads
+document.addEventListener('DOMContentLoaded', function () {
+    fetchRatings();
+});
+
+
+
+        // Fetch data when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchSponsors();
+            fetchRatings();
+        });
+    </script>
+</body>
+</html>
+
+
+

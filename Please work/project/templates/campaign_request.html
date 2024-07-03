@@ -1,0 +1,132 @@
+{% extends 'sponsor_base.html' %}
+
+{% block title %}
+    Requests Sent by Sponsor
+{% endblock %}
+<style>
+    /* Custom styles */
+    body {
+        background-color: #000; /* Black background */
+        color: #fff; /* White text */
+    }
+
+    .container {
+            max-width: 1400px; /* Increased max-width */
+            margin: auto; /* Center align the container */
+            padding: 20px;
+        }
+
+        .card {
+            border: none;
+            background-color: #222; /* Dark gray background */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s ease-in-out;
+            color: #ccc; /* Light gray text */
+            margin-bottom: 30px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff; /* White title text */
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background-color: rgb(3, 3, 3);
+            color: rgb(252, 170, 170);
+            border-radius: 10px;
+            padding: 10px 20px;
+            border: none;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: rgb(19, 4, 4);
+        }
+
+        .btn-outline-primary {
+            color: rgb(3, 3, 3);
+            border: 1px solid rgb(3, 3, 3);
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: rgb(3, 3, 3);
+            color: rgb(252, 170, 170);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 30px;
+            }
+        }
+        .btn-primary,
+        .btn-success,
+        .btn-danger {
+            margin-right: 10px; /* Adjust right margin between buttons */
+        }
+</style>
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Sent Influencer Requests</h2>
+        <div class="row">
+            {% for request in requests %}
+                <div class="col-lg-4 col-md-6 mb-4 campaign-entry" id="request-{{ request.id }}">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <p class="card-text"><strong>Name:</strong> {{ request.username }}</p>
+                            <p class="card-text"><strong>Platform:</strong> {{ request.platform }}</p>
+                            <p class="card-text"><strong>Rating:</strong> ${{ request.ratings }}</p>
+                            <p class="card-text"><strong>Status:</strong>
+                                {% if request.status == 'pending' %}
+                                    Pending
+                                {% elif request.status == 'accepted' %}
+                                    Accepted
+                                {% elif request.status == 'rejected' %}
+                                    Rejected
+                                {% endif %}
+                            </p>
+                            <div class="btn-group" role="group" aria-label="Request Actions">
+                                <a href="{{ url_for('view_requests', influencer_id=request.id) }}" class="btn btn-primary btn-sm">View</a>
+                                {% if request.status == 'pending' %}
+                                <form method="post" action="{{ url_for('withdraw_influencer', request_id=request.id) }}" class="withdraw-request-form" data-request-id="{{ request.id }}" style="display: inline-block;">
+                                    <button type="submit" class="btn btn-outline-primary">Withdraw</button>
+                                </form>
+                                {% else %}
+                                    <button class="btn {% if request.status == 'accepted' %}btn-success{% elif request.status == 'rejected' %}btn-danger{% else %}btn-secondary{% endif %}" disabled>
+                                        {% if request.status == 'accepted' %}
+                                            Accepted
+                                        {% elif request.status == 'rejected' %}
+                                            Rejected
+                                        {% else %}
+                                            Action not available
+                                        {% endif %}
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

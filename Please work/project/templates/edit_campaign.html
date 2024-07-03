@@ -1,0 +1,39 @@
+<!-- templates/edit_campaign.html -->
+{% extends "sponsor_base.html" %}
+{% block title %}Edit Campaign{% endblock %}
+
+{% block content %}
+    <h1>Edit Campaign</h1>
+    <form method="post">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ campaign.title }}">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description">{{ campaign.description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="start_date">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ campaign.start_date }}">
+        </div>
+        <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ campaign.end_date }}">
+        </div>
+        <div class="form-group">
+            <label for="budget">Budget</label>
+            <input type="number" class="form-control" id="budget" name="budget" value="{{ campaign.budget }}">
+        </div>
+        <div class="form-group">
+            <label for="image_url">Image URL</label>
+            <input type="text" class="form-control" id="image_url" name="image_url" value="{{ campaign.image_url }}">
+        </div>
+        <div class="form-group">
+            <label for="niche">Niche</label>
+            <input type="text" class="form-control" id="niche" name="niche" value="{{ campaign.niche }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Campaign</button>
+        <a href="{{ url_for('sponsor_profile') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

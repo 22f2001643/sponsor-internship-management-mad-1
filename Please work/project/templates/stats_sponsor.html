@@ -1,0 +1,123 @@
+<!-- stats_sponsor.html -->
+
+{% extends "sponsor_base.html" %}
+{% block title %}Statistics{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Statistics</h1>
+
+    <!-- Display Count of Influencers by Platform -->
+    <div class="card">
+        <div class="card-header">
+            Count of Influencers by Platform
+        </div>
+        <div class="card-body">
+            <canvas id="platformChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Display Average Ratings of Influencers -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Average Ratings of Influencers
+        </div>
+        <div class="card-body">
+            <canvas id="ratingsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Display Ratings vs. Influencers -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Ratings vs. Influencers
+        </div>
+        <div class="card-body">
+            <canvas id="ratingsInfluencersChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data for Ratings vs. Influencers
+        const ratingsLabels = {{ ratings_vs_influencers | map(attribute='influencer_name') | list | tojson }};
+        const ratingsData = {{ ratings_vs_influencers | map(attribute='ratings') | list | tojson }};
+
+        const ratingsInfluencersCtx = document.getElementById('ratingsInfluencersChart').getContext('2d');
+        const ratingsInfluencersChart = new Chart(ratingsInfluencersCtx, {
+            type: 'bar',
+            data: {
+                labels: ratingsLabels,
+                datasets: [{
+                    label: 'Ratings of Influencers',
+                    data: ratingsData,
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: 5 // Assuming ratings are out of 5
+                    }
+                }
+            }
+        });
+
+        // Data for Average Ratings of Influencers
+        const avgRatings = {{ avg_ratings }};
+
+        const ratingsCtx = document.getElementById('ratingsChart').getContext('2d');
+        const ratingsChart = new Chart(ratingsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Average Rating'],
+                datasets: [{
+                    label: 'Average Ratings of Influencers',
+                    data: [avgRatings, 5 - avgRatings], // Assuming ratings out of 5
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                cutout: '70%'
+            }
+        });
+
+        // Data for Count of Influencers by Platform
+        const platformLabels = {{ platform_stats | map(attribute='platform') | list | tojson }};
+        const platformData = {{ platform_stats | map(attribute='count') | list | tojson }};
+
+        const platformCtx = document.getElementById('platformChart').getContext('2d');
+        const platformChart = new Chart(platformCtx, {
+            type: 'bar',
+            data: {
+                labels: platformLabels,
+                datasets: [{
+                    label: 'Count of Influencers',
+                    data: platformData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

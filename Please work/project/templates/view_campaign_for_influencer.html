@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Campaign</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2>{{ campaign['title'] }}</h2>
+        <p>Description: {{ campaign['description'] }}</p>
+        <p>Niche: {{ campaign['niche'] }}</p>
+        <p>Start Date: {{ campaign['start_date'] }}</p>
+        <p>End Date: {{ campaign['end_date'] }}</p>
+        <p>Budget: {{ campaign['budget'] }}</p>
+        <!-- Add more details as needed -->
+        <a href="{{ url_for('influencer_dashboard') }}" class="btn btn-primary">Back</a>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src

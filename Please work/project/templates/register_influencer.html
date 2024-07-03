@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Register as Influencer{% endblock %}
+{% block content %}
+<h2>Register as Influencer</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.username.label(class="form-control-label") }}
+        {{ form.username(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.password.label(class="form-control-label") }}
+        {{ form.password(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.confirm_password.label(class="form-control-label") }}
+        {{ form.confirm_password(class="form-control") }}
+    </div>
+   
+    <!-- Dropdown for social media platforms -->
+    <div class="form-group">
+        <label for="platform" class="form-control-label">Platform</label>
+        <select name="platform" id="platform" class="form-control">
+            <option value="Instagram">Instagram</option>
+            <option value="YouTube">YouTube</option>
+            <option value="TikTok">TikTok</option>
+            <option value="Twitter">Twitter</option>
+            <option value="Facebook">Facebook</option>
+            <option value="Twitch">Twitch</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+    <br><br>
+    <button type="submit" class="btn btn-primary">{{ form.submit() }}</button>
+</form>
+{% endblock %}
+
+

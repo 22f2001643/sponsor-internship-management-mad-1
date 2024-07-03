@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h2>Login</h2>
+<form id="loginForm" method="POST">
+    <div class="form-group">
+        <label class="form-control-label" for="username">Username</label>
+        <input type="text" id="username" class="form-control" name="username">
+    </div>
+    <div class="form-group">
+        <label class="form-control-label" for="password">Password</label>
+        <input type="password" id="password" class="form-control" name="password">
+    </div>
+    <div class="form-group">
+        <label class="form-control-label" for="role">Role</label>
+        <select id="role" class="form-control" name="role">
+            <option value="admin">Admin</option>
+            <option value="influencer">Influencer</option>
+            <option value="sponsor">Sponsor</option>
+        </select>
+    </div>
+    <button type="submit" id="loginButton" class="btn btn-primary">Login</button>
+</form>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    var role = document.getElementById("role").value;
+
+    // Perform a fetch request to submit the login data
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'username=' + encodeURIComponent(username) +
+              '&password=' + encodeURIComponent(password) +
+              '&role=' + encodeURIComponent(role)
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            alert("Invalid username or password. Please try again.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+</script>
+{% endblock %}
+
+
